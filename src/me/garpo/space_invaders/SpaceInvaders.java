@@ -1,6 +1,5 @@
 package me.garpo.space_invaders;
 
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -9,8 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -31,7 +28,9 @@ public class SpaceInvaders extends Application{
     public static final int ALIEN_WIDTH = 50;
     public static final int LEFT_INDENT = 225;
     public static final int TOP_INDENT = 30;
+
     private boolean running = false;
+    private UserAction action = UserAction.NONE;
 
     // Add background image
     private Image backgroundImage = new Image("me/garpo/space_invaders/Resourses/ScreenshotStarfield.png");
@@ -43,7 +42,7 @@ public class SpaceInvaders extends Application{
 
     // Add player image
     private Image playerImage = new Image("me/garpo/space_invaders/Resourses/player.png");
-    private ImageView playerView = new ImageView(playerImage);
+    private ImageView player = new ImageView(playerImage);
 
     // Create an array of images with all the invaders
     private ImageView[] aliens = new ImageView[ALIEN_COLUMN * ALIEN_ROW];
@@ -51,6 +50,22 @@ public class SpaceInvaders extends Application{
     // Animation initialisation
     private Timeline timeline = new Timeline();
 
+    private void shootBullet(){
+        System.out.println("boom");
+    }
+
+    private void startGame(){
+        player.setTranslateY(WINDOW_HEIGHT - 35);
+        player.setTranslateX(WINDOW_WIDTH /2 - 75/2);
+
+        timeline.play();
+        running = true;
+    }
+
+    private void stopGame(){
+        running = false;
+        timeline.stop();
+    }
 
     private void createInvation(Pane root){
         int index;
@@ -59,8 +74,8 @@ public class SpaceInvaders extends Application{
                 index = i * ALIEN_COLUMN + j;
                 aliens[index] = new ImageView(alienImage);
                 aliens[index].setPreserveRatio(true);
-                aliens[index].setX(j * (ALIEN_WIDTH + ALIEN_SPACE) + LEFT_INDENT);
-                aliens[index].setY(i * (ALIEN_WIDTH + ALIEN_SPACE) + TOP_INDENT);
+                aliens[index].setTranslateX(j * (ALIEN_WIDTH + ALIEN_SPACE) + LEFT_INDENT);
+                aliens[index].setTranslateY(i * (ALIEN_WIDTH + ALIEN_SPACE) + TOP_INDENT);
                 aliens[index].setFitWidth(ALIEN_WIDTH);
                 root.getChildren().add(aliens[index]);
             }
@@ -74,23 +89,37 @@ public class SpaceInvaders extends Application{
         root.getChildren().add(backgroundView);
 
         // player properties in the stage
-        playerView.setPreserveRatio(true);
-        playerView.setFitWidth(PLAYER_WIDTH);
-        playerView.setY(WINDOW_HEIGHT - 35);
-        playerView.setX(WINDOW_WIDTH /2 - 75/2);
+        player.setPreserveRatio(true);
+        player.setFitWidth(PLAYER_WIDTH);
+
 
         createInvation(root);
 
-        // Main Game Loop
-        KeyFrame frame = new KeyFrame(Duration.seconds(0.2), event -> {
+
+
+        // Main Game Loop in 60fps
+        KeyFrame frame = new KeyFrame(Duration.seconds(0.016), event -> {
             if(!running)
                 return;
+
+            switch (action){
+                case LEFT:
+                    if(player.getTranslateX() - 5 >= 0)
+                        player.setTranslateX(player.getTranslateX() -5);
+                    break;
+                case RIGHT:
+                    if(player.getTranslateX() + PLAYER_WIDTH + 5 <= WINDOW_WIDTH)
+                        player.setTranslateX(player.getTranslateX() + 5);
+                    break;
+                case NONE:
+                    break;
+            }
         } );
 
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        root.getChildren().add( playerView);
+        root.getChildren().add(player);
 
         return root;
     }
@@ -104,13 +133,36 @@ public class SpaceInvaders extends Application{
         backgroundView.fitWidthProperty().bind(primaryStage.widthProperty());
         backgroundView.fitHeightProperty().bind(primaryStage.heightProperty());
 
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()){
+                case A:
+                    action = UserAction.LEFT;
+                    break;
+                case D:
+                    action = UserAction.RIGHT;
+                    break;
+            }
+        });
 
-
+        scene.setOnKeyReleased(event -> {
+            switch (event.getCode()) {
+                case A:
+                    action = UserAction.NONE;
+                    break;
+                case D:
+                    action = UserAction.NONE;
+                    break;
+                case SPACE:
+                    shootBullet();
+                    break;
+            }
+        });
 
         primaryStage.setTitle("Space Invaders");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
+        startGame();
     }
 
     public static void main(String[] args){
