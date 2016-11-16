@@ -20,8 +20,8 @@ import javafx.util.Duration;
  * Created by dolgan12 on 2016-11-14.
  */
 public class Main extends Application{
-    public static final int WINDOW_WIDTH = 800;
-    public static final int WINDOW_HEIGHT = 600;
+    public static final int WINDOW_WIDTH = 1200;
+    public static final int WINDOW_HEIGHT = 800;
 
     // Settings for number of aliens
     public static final int ALIEN_COLUMN = 11;
@@ -29,8 +29,10 @@ public class Main extends Application{
 
     //
     public static final int PLAYER_WIDTH = 75;
+    public static final int ALIEN_SPACE = 20;
     public static final int ALIEN_WIDTH = 50;
-
+    public static final int LEFT_INDENT = 225;
+    public static final int TOP_INDENT = 30;
     private boolean running = false;
 
     // Add background image
@@ -52,16 +54,34 @@ public class Main extends Application{
     private Timeline timeline = new Timeline();
 
 
+    private void createInvation(Pane root){
+        int index;
+        for(int i = 0; i < ALIEN_ROW; i++){
+            for(int j = 0; j < ALIEN_COLUMN; j++){
+                index = i * ALIEN_COLUMN + j;
+                aliens[index] = new ImageView(alienImage);
+                aliens[index].setPreserveRatio(true);
+                aliens[index].setX(j * (ALIEN_WIDTH + ALIEN_SPACE) + LEFT_INDENT);
+                aliens[index].setY(i * (ALIEN_WIDTH + ALIEN_SPACE) + TOP_INDENT);
+                aliens[index].setFitWidth(ALIEN_WIDTH);
+                root.getChildren().add(aliens[index]);;
+            }
+        }
+    }
+
     private Parent createContent() {
 
         Pane root = new Pane();
         root.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        root.getChildren().add(backgroundView);
 
         // player properties in the stage
         playerView.setPreserveRatio(true);
         playerView.setFitWidth(PLAYER_WIDTH);
         playerView.setY(WINDOW_HEIGHT - 35);
         playerView.setX(WINDOW_WIDTH /2 - 75/2);
+
+        createInvation(root);
 
         // Main Game Loop
         KeyFrame frame = new KeyFrame(Duration.seconds(0.2), event -> {
@@ -72,7 +92,7 @@ public class Main extends Application{
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        root.getChildren().addAll(backgroundView, playerView);
+        root.getChildren().add( playerView);
 
         return root;
     }
@@ -90,6 +110,7 @@ public class Main extends Application{
 
 
         primaryStage.setTitle("Space Invaders");
+        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
