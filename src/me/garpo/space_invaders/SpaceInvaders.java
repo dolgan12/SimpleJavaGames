@@ -4,8 +4,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -19,7 +17,7 @@ import javafx.util.Duration;
 /**
  * Created by dolgan12 on 2016-11-14.
  */
-public class Main extends Application{
+public class SpaceInvaders extends Application{
     public static final int WINDOW_WIDTH = 1200;
     public static final int WINDOW_HEIGHT = 800;
 
@@ -64,7 +62,7 @@ public class Main extends Application{
                 aliens[index].setX(j * (ALIEN_WIDTH + ALIEN_SPACE) + LEFT_INDENT);
                 aliens[index].setY(i * (ALIEN_WIDTH + ALIEN_SPACE) + TOP_INDENT);
                 aliens[index].setFitWidth(ALIEN_WIDTH);
-                root.getChildren().add(aliens[index]);;
+                root.getChildren().add(aliens[index]);
             }
         }
     }
