@@ -13,8 +13,12 @@ import javafx.util.Duration;
 
 /**
  * Created by dolgan12 on 2016-11-14.
+ *
  */
 public class SpaceInvaders extends Application{
+
+    Pane root = new Pane();
+
     public static final int WINDOW_WIDTH = 1200;
     public static final int WINDOW_HEIGHT = 800;
 
@@ -54,19 +58,28 @@ public class SpaceInvaders extends Application{
         System.out.println("boom");
     }
 
+
     private void startGame(){
         player.setTranslateY(WINDOW_HEIGHT - 35);
         player.setTranslateX(WINDOW_WIDTH /2 - 75/2);
+
+        createInvation(root);
 
         timeline.play();
         running = true;
     }
 
+    // Function that runs to halt the main gameloop
     private void stopGame(){
         running = false;
         timeline.stop();
     }
 
+    /*
+    *   Creates all the aliens and adds them to the aliens array and gives them
+    *   the initial positions on the screen.
+    *
+    * */
     private void createInvation(Pane root){
         int index;
         for(int i = 0; i < ALIEN_ROW; i++){
@@ -81,10 +94,11 @@ public class SpaceInvaders extends Application{
             }
         }
     }
-
+    /*
+    * Function that creates the Parent Pane with its content.
+    * */
     private Parent createContent() {
 
-        Pane root = new Pane();
         root.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         root.getChildren().add(backgroundView);
 
@@ -92,8 +106,6 @@ public class SpaceInvaders extends Application{
         player.setPreserveRatio(true);
         player.setFitWidth(PLAYER_WIDTH);
 
-
-        createInvation(root);
 
 
 
